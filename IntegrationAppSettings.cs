@@ -14,6 +14,7 @@ namespace FC_NDIS
         public string Token { get; set; }
         public string GetTokenURL { get; set; }
         public string AssetURL { get; set; }
+        public string IndividualAssetURL { get; set; }
         public string ResourcePost { get; set; }
         public string ResourcePut { get; set; }
         public string ResourceGetDetails { get; set; }
