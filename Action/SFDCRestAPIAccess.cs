@@ -60,7 +60,7 @@ namespace FC_NDIS.Action
                                                     ,enrtcr__Quantity_Type__c
                                                 FROM enrtcr__Rate__c
                                                 WHERE enrtcr__Effective_Date__c <= TODAY
-                                                    AND enrtcr__End_Date__c >= TODAY
+                                                    AND CreatedDate >= 2020-11-30T06:38:00.000Z
                                                     AND (
                                                             (Name LIKE '%25WA%25' AND enrtcr__Funding_Type__c = 'NDIS')
                                                             OR enrtcr__Funding_Type__c != 'NDIS'
@@ -132,7 +132,7 @@ namespace FC_NDIS.Action
             Login();
 
 
-            var queryCustomer = @"SELECT Id ,enrtcr__Effective_Date__c,enrtcr__End_Date__c,Name,enrtcr__Service__c,enrtcr__Allow_Rate_Negotiation__c,enrtcr__Amount_Ex_GST__c,enrtcr__Quantity_Type__c FROM enrtcr__Rate__c WHERE enrtcr__Effective_Date__c <= TODAY AND enrtcr__End_Date__c >= TODAY AND ((Name LIKE '%25WA%25' AND enrtcr__Funding_Type__c = 'NDIS') OR enrtcr__Funding_Type__c != 'NDIS') AND enrtcr__Service__c IN ( SELECT enrtcr__Travel_Service__c FROM enrtcr__Service__c WHERE enrtcr__Travel_Service__c != null AND enrtcr__Allow_Non_Labour_Travel__c = true )ORDER BY enrtcr__Service__c, enrtcr__Effective_Date__c desc";
+            var queryCustomer = @"SELECT Id ,enrtcr__Effective_Date__c,enrtcr__End_Date__c,Name,enrtcr__Service__c,enrtcr__Allow_Rate_Negotiation__c,enrtcr__Amount_Ex_GST__c,enrtcr__Quantity_Type__c FROM enrtcr__Rate__c WHERE enrtcr__Effective_Date__c <= TODAY AND CreatedDate >= 2020-11-30T06:38:00.000Z AND ((Name LIKE '%25WA%25' AND enrtcr__Funding_Type__c = 'NDIS') OR enrtcr__Funding_Type__c != 'NDIS') AND enrtcr__Service__c IN ( SELECT enrtcr__Travel_Service__c FROM enrtcr__Service__c WHERE enrtcr__Travel_Service__c != null AND enrtcr__Allow_Non_Labour_Travel__c = true )ORDER BY enrtcr__Service__c, enrtcr__Effective_Date__c desc";
 
             var APIResponse = QueryAllRecord(Client, queryCustomer);
             var settings = new JsonSerializerSettings
