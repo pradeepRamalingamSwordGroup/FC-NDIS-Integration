@@ -78,20 +78,20 @@ namespace FC_NDIS.Action
                         vh.Registration = vsRes.LicensePlate;
                         vh.Make = vsRes.Make;
                         vh.Model = vsRes.Model;
+                        vh.Type = 1; // "Fleet" if it is syncing from the fleet
                         string GuidID = vsRes.ID;
-                        var CatType = AssetType(GuidID, ClientID, UserID, Token);
-                        if (CatType != 0)
-                            vh.Category = CatType;
-                        if (vsRes.AssetType != null)
+                        (int catType, string assetTypeDescription) = AssetType(GuidID, ClientID, UserID, Token);
+                        if (catType != 0)
+                            vh.Category = catType;
+                        if (!string.IsNullOrEmpty(assetTypeDescription))
                         {
-                            vh.Type = (vsRes.AssetType.ToString().Contains("Fleet")) ? 1 : 2;
-                            vh.Active = (vsRes.AssetType.ToString().Contains("Replaced")) ? false : true;
+                            vh.Active = assetTypeDescription.Contains("Replaced") ? false : true;
                         }
                         else
                         {
                             vh.Active = true;
-                            vh.Type = 1;
                         }
+
                         vh.Description = vsRes.Description;
                         vh.Availability = true;
                         vh.CreatedDate = DateTime.Now;
@@ -109,13 +109,16 @@ namespace FC_NDIS.Action
             }
         }
 
-        public int AssetType(string GUID, string ClientID, string UserID, string Token)
+        public (int, string) AssetType(string GUID, string ClientID, string UserID, string Token)
         {
             int result = 0;
-            var client = new RestClient("https://hosted.fleetcomplete.com.au/Integration/v8_5_0/GPS/Asset/" + GUID);
+            string assetTypeDescription = string.Empty;
+            string url = _integrationAppSettings.IndividualAssetURL;
+            url = url.Replace("{id}", GUID);
+
+            var client = new RestClient(url);
             client.Timeout = -1;
             var request = RestRequestMapping((int)Method.GET, ClientID, UserID, Token);
-
 
             IRestResponse response = client.Execute(request);
             Root vehicleInformation = JsonConvert.DeserializeObject<Root>(response.Content);
@@ -135,7 +138,9 @@ namespace FC_NDIS.Action
                 result = 1;
             }
 
-            return result;
+            assetTypeDescription = vehicleInformation?.Data?.AssetType?.Description;
+
+            return (result, assetTypeDescription);
         }
 
         public bool PostResource(string ClientID, string UserID, string Token)
